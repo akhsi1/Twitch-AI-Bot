@@ -1,0 +1,60 @@
+# Ignore system files
+Thumbs.db
+Desktop.ini
+
+# Ignore logs
+*.log
+
+# Ignore env file
+.env
+
+# Ignore node_modules
+node_modules/
+
+# Ignore dependency directories
+.DS_Store
+.vscode/
+.idea/
+out/
+
+# Ignore build directories
+/dist
+/build
+/temp
+
+# Ignore temporary files
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+*.swn
+
+# Ignore Python bytecode
+*.pyc
+*.pyo
+__pycache__/
+
+# Ignore compiled files
+*.class
+*.dll
+*.exe
+*.o
+*.so
+
+# Ignore package manager lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Ignore Windows specific files
+*.~lock.*
+*.sln
+*.suo
+*.VC.db
+*.vscode/
+*.config
+*.pdb
+
+# Ignore Git configuration
+.git/
