@@ -159,22 +159,32 @@ async function onMessageHandler(channel, tags, message, self) {
 
     const user = tags.username;
 
-
-    //const isQuestion = await ai.isQuestion(trimmedMessage);
     function containsLink(message) {
         const urlPattern = /(https?:\/\/[^\s]+)|(www\.[^\s]+)/g;
         return urlPattern.test(message);
     }
 
     // Check if message meets criteria
-    if (['?', 'why ', 'when', 'what ', 'how ', 'where ', 'should i', 'can you', 'can u', 'do the', 'do you'].some(item => trimmedMessage.includes(item))
-        || isMentioned
-        && !containsLink(trimmedMessage)) 
+    if (
+        (['?', 'why ', 'when', 'what', 'how', 'where', 'should i', 'can you', 'can u', 'do the', 'do you'].some(item => trimmedMessage.includes(item))
+        && !containsLink(trimmedMessage))
+        || isMentioned)
         { }
     else {
         let generalChat = true;
         // await ai.processMessage(user, tags.subscriber, message, isMentioned, generalChat);
         console.log('Message does not meet filter criteria. Ignoring message.');
+        return;
+    }
+
+    // Return if it's not a question
+    var isQuestion = false;
+    try {
+        isQuestion = await ai.isQuestion(trimmedMessage);
+    } catch {
+        console.log("error processing isQuestion")
+    }
+    if (!isQuestion && !isMentioned) {
         return;
     }
 

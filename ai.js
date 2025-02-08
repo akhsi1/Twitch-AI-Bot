@@ -4,10 +4,10 @@ const { llama3instructions, llama3examples } = require('./llama3instructions');
 const { phi4instructions } = require ('./phi4instructions');
 
 async function isQuestion(message) {
-  message = 'Respond in true or false only. Respond "true" if this message is a question, or "false" if not: ' + message;
+  message = 'Respond in true or false only. Respond "true" if the following message has a question, or "false" if not: ' + `"${message}"`;
   const response = await ollama.chat({
-    model: 'mistral-small',
-    num_ctx: 2000,
+    model: 'phi4:14b-q8_0',
+    num_ctx: 2048,
     messages: [{ role: 'user', content: message }],
   });
 
@@ -62,10 +62,14 @@ async function processMessage(user, subscriber, message, isMentioned, generalCha
       stream: false
     });
 
-    console.log(response);
+    console.log(response.response + '\neval count = ' +response.eval_count);
 
     if (isMentioned) {
       return `I’ll reply as I’m tagged, but it might be wrong. ` + response.response;
+    }
+    if (response.eval_count >= 66) {
+      console.log('Eval count too large');
+      return '[10]';
     }
     return response.response;
   } catch (error) {
