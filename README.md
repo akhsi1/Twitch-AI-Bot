@@ -3,11 +3,11 @@ This AI responds to common questions asked about Throne and Liberty on the strea
 
 Makes the streamer's life much easier by not having to repeat answers to the same questions hundreds of time each day.
 
-It serves thousands of viewers and chat messages every day, as Whelps averages 700-1k viewers and sometimes up to 10k.
+It serves thousands of viewers and chat messages every day, as Whelps averages 700-1k viewers and sometimes over 10k.
 
 It can also make jokes/puns to subscribers to encourage more subs. 
 
-On the 2nd day of AI release, Whelps gathered more than 200 subs ($1600) in a day.
+On the 2nd day of AI release, Whelps gathered more than 200 subs ($1800) in a day.
 
 use `node bot.js` to start the bot
 
