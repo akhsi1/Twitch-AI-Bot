@@ -54,20 +54,20 @@ async function processMessage(user, subscriber, message, isMentioned, generalCha
     const response = await ollama.generate({
       model: 'phi4:14b-q8_0',
       options: {
-        num_ctx: 2048 * 6,
-        temperature: 0.15
+        num_ctx: 16384,
+        temperature: 0
       },
       system: systemContext,
       prompt: aiPrompt,
       stream: false
     });
 
-    console.log(response.response + '\neval count = ' +response.eval_count);
+    console.log(response.response + '\nEVAL COUNT = ' +response.eval_count);
 
     if (isMentioned) {
       return `I’ll reply as I’m tagged, but it might be wrong. ` + response.response;
     }
-    if (response.eval_count >= 66) {
+    if (response.eval_count >= 70) {
       console.log('Eval count too large');
       return '[10]';
     }
@@ -77,7 +77,7 @@ async function processMessage(user, subscriber, message, isMentioned, generalCha
   }
 }
 
-async function processSubscription(user, isPrime, giftCount) {
+async function processSubscription(user, isPrime, giftCount, recipient) {
   try {
 
     var aiPrompt = `"${user}" has subscribed!`;
@@ -87,7 +87,11 @@ async function processSubscription(user, isPrime, giftCount) {
     }
 
     if (giftCount && giftCount >= 1) {
-      aiPrompt = `"${user}" has gifted ${giftCount} subs`;
+      aiPrompt = `"${user}" has gifted ${giftCount} subs!`;
+    }
+
+    if (recipient) {
+      aiPrompt = `"${user}" has gifted ${recipient} a sub!`;
     }
     
     const response = await ollama.generate({

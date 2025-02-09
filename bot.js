@@ -2,6 +2,7 @@ require('dotenv').config();
 const tmi = require('tmi.js');
 const axios = require('axios');
 const ai = require('./ai');
+const { questionWords} = require('./const');
 
 // OAuth token variables
 let accessToken = process.env.TWITCH_OAUTH_TOKEN;
@@ -140,6 +141,8 @@ async function onMessageHandler(channel, tags, message, self) {
             client.emit('resub', 'whelpsAI', 'alston321', null, null, null,{ prime: true }, {}); 
         } else if (message.toLowerCase() == '!testgiftsub') {
             client.emit('submysterygift', 'whelpsAI', 'alston321', 5, null, null, {}); 
+        } else if (message.toLowerCase() == '!testsubgift') {
+            client.emit('subgift', 'whelpsAI', 'alston321', 5, "puck", null, {}); 
         }
     } else if (message.toLowerCase() == '!startai' || message.toLowerCase() == '!stopai') {
         client.say(channel, 'nice try ;)');
@@ -166,7 +169,7 @@ async function onMessageHandler(channel, tags, message, self) {
 
     // Check if message meets criteria
     if (
-        (['?', 'why ', 'when', 'what', 'how', 'where', 'should i', 'can you', 'can u', 'do the', 'do you'].some(item => trimmedMessage.includes(item))
+        (questionWords.some(item => trimmedMessage.includes(item))
         && !containsLink(trimmedMessage))
         || isMentioned)
         { }
@@ -180,7 +183,9 @@ async function onMessageHandler(channel, tags, message, self) {
     // Return if it's not a question
     var isQuestion = false;
     try {
-        isQuestion = await ai.isQuestion(trimmedMessage);
+        if (!isMentioned) {
+            isQuestion = await ai.isQuestion(trimmedMessage);
+        }
     } catch {
         console.log("error processing isQuestion")
     }
@@ -253,8 +258,15 @@ client.on("submysterygift", async (channel, username, numbOfSubs, methods, users
     }
 });
 
+client.on("subgift", async (channel, username, streakMonths, recipient, methods, userstate) => {
+    try {
+        await processSub(username, methods, channel, null, recipient);
+    } catch {
+        console.error('error processing gift subgift');
+    }
+});
 
-async function processSub(user, methods, channel, giftCount) {
+async function processSub(user, methods, channel, giftCount, recipient) {
     // Rate limit responses
     const time = Date.now();
     const rateLimitInterval = 10000;
@@ -276,7 +288,7 @@ async function processSub(user, methods, channel, giftCount) {
             return;
         }
         lastSubTime = time
-        const aiResponse = await ai.processSubscription(user, methods?.prime, giftCount);
+        const aiResponse = await ai.processSubscription(user, methods?.prime, giftCount, recipient);
         lastSubTime = time
         if (started){ 
             client.say(channel, aiResponse);
