@@ -64,7 +64,8 @@ const questionWords = [
     `what kind`,
     `who can`,
     `who should`,
-    `who will`
+    `who will`,
+    `can some`
   ];
 
   module.exports = {

@@ -4,6 +4,24 @@ const axios = require('axios');
 const ai = require('./ai');
 const { questionWords} = require('./const');
 
+const fs = require('fs');
+const path = require('path');
+
+// Custom log function
+function log(message, score, response) {
+  const logFilePath = path.join(__dirname, 'logs.txt');
+  const timestamp = new Date().toISOString(); // Add timestamp
+  var logMessage = `${timestamp} - ${message}-${score}\n${response}\n\n`; // Format message
+  if (!message) logMessage = `${timestamp} - ${response}\n\n`;
+
+  // Append log message to file
+  fs.appendFile(logFilePath, logMessage, (err) => {
+    if (err) {
+      console.error('Failed to write log:', err);
+    }
+  });
+}
+
 // OAuth token variables
 let accessToken = process.env.TWITCH_OAUTH_TOKEN;
 let refreshToken = process.env.TWITCH_REFRESH_TOKEN;
@@ -215,18 +233,32 @@ async function onMessageHandler(channel, tags, message, self) {
 
         var aiResponse = await ai.processMessage(user, tags.subscriber, message, isMentioned);
 
-        let number = (aiResponse.match(/\[(\d+)\]/) || [])[1];
-        console.log('confidence score = ' + number);
-        aiResponse = aiResponse.replace(/\[\d+\]/g, '');
-        aiResponse = aiResponse.replace(/<think>[\s\S]*?<\/think>/g, '');
+        if (!aiResponse) return;
+
+        let rscore = (aiResponse.match(/\[(\d+)\]/) || [])[1];
+        let pscore = (aiResponse.match(/{(\d+)}/) || [])[1];
+        console.log(`RSCORE= ${rscore}\nPSCORE= ${pscore}`);
+        let totalscore = parseInt(pscore ? pscore : 0)+parseInt(rscore ? rscore : 0);
+        console.log(`TOTAL=${totalscore}`);
         aiResponse = aiResponse.replace(/(\*\*|__)(.*?)\1/g, '$2'); // Remove bold
         aiResponse = aiResponse.replace(/(\*|_)(.*?)\1/g, '$2');   // Remove italics
+        aiResponse = aiResponse.replace(/{\d+}.*/, '').trim(); // Remove everything after {num}
         aiResponse = aiResponse.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '$2'); // Keep the URL but remove formatting
+        aiResponse = aiResponse.replace(/\[\d+\]/g, ''); // Remove [num]
+        aiResponse = aiResponse.replace(/\{\d+\}/g, ''); // Remove {num}
+        aiResponse = aiResponse.replace(/<think>[\s\S]*?<\/think>/g, '');
+        aiResponse = aiResponse.replace(/\(.*?\)/g, '').trim(); // Remove everything including () from "(some text)"
 
-        if (started && (number >= 90 || isMentioned)) {
+        if (aiResponse.length > 260 && !isMentioned){
+            console.log(`character limit reached: ${aiResponse.length}`);
+            return;
+        }
+
+        if (started && (totalscore >= 130) || isMentioned) {
             client.say(channel, aiResponse);
             // Update the last message time
             lastMessageTime = currentTime;
+            log(trimmedMessage, totalscore, aiResponse);
         }
 
     } catch (error) {
@@ -292,6 +324,7 @@ async function processSub(user, methods, channel, giftCount, recipient) {
         lastSubTime = time
         if (started){ 
             client.say(channel, aiResponse);
+            log(undefined, undefined, aiResponse);
         }
     } catch (error) {
         console.error("Error handling subscription:", error);

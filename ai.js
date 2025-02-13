@@ -33,9 +33,8 @@ async function processMessage(user, subscriber, message, isMentioned, generalCha
     //   prompt = `Today's date is ${currentTime}.\n${context}\n${instructions}. Viewer "${user}" said: ${message} `
     // }
 
-    var systemContext = `${context}\n${phi4instructions}.\n${examples}\nToday's date is ${currentTime}. This is the end of System Context.`;
-    // var systemContext = `${context}\n${instructions}.\nToday's date is ${currentTime}. This is the end of System Context.`;
-
+    //var systemContext = `${context}\n${phi4instructions}.\n${examples}\nToday's date is ${currentTime}. This is the end of System Context. <<<End of Context>>>`;
+    var systemContext = `${context}\n${phi4instructions}.\nToday's date is ${currentTime}. This is the end of System Context. <<<End of Context>>>`;
 
     //   deepseek-r1:32b(doesn't know about new world)  
     //   llama3.1:8b(bad)  
@@ -67,10 +66,10 @@ async function processMessage(user, subscriber, message, isMentioned, generalCha
     if (isMentioned) {
       return `I’ll reply as I’m tagged, but it might be wrong. ` + response.response;
     }
-    if (response.eval_count >= 70) {
-      console.log('Eval count too large');
-      return '[10]';
-    }
+    // if (response.eval_count >= 70) {
+    //   console.log('Eval count too large');
+    //   return undefined;
+    // }
     return response.response;
   } catch (error) {
     console.error('Error interacting with Ollama API:', error);
