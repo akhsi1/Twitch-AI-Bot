@@ -4,6 +4,7 @@ Desktop.ini
 
 # Ignore logs
 *.log
+logs.txt
 
 # Ignore env file
 .env

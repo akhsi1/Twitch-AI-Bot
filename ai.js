@@ -4,7 +4,7 @@ const { llama3instructions, llama3examples } = require('./llama3instructions');
 const { phi4instructions } = require ('./phi4instructions');
 
 async function isQuestion(message) {
-  message = 'Respond in true or false only. Respond "true" if the following message has a question, or "false" if not: ' + `"${message}"`;
+  message = 'Respond in true or false only. Respond "true" if the following message contains a question, or "false" if not: ' + `"${message}"`;
   const response = await ollama.chat({
     model: 'phi4:14b-q8_0',
     num_ctx: 2048,

@@ -3,6 +3,7 @@ const tmi = require('tmi.js');
 const axios = require('axios');
 const ai = require('./ai');
 const { questionWords} = require('./const');
+const { getViewerCount } = require('./twitchApi');
 
 const fs = require('fs');
 const path = require('path');
@@ -172,6 +173,7 @@ async function onMessageHandler(channel, tags, message, self) {
         }
         messageList.addMessage(message);
     }
+    console.log(messageList);
 
     if (!started) {
         console.log("bot is stopped")
@@ -254,13 +256,34 @@ async function onMessageHandler(channel, tags, message, self) {
             return;
         }
 
-        if (started && (totalscore >= 130) || isMentioned) {
+        function sendResponse(){ 
+            if (!started) return;
             client.say(channel, aiResponse);
             // Update the last message time
             lastMessageTime = currentTime;
             log(trimmedMessage, totalscore, aiResponse);
         }
 
+        if (isMentioned) {
+            sendResponse();
+            return;
+        }
+
+        if (totalscore < 130){
+            return;
+        }
+        
+        try { 
+            var viewCount = await getViewerCount('thewhelps');
+        } catch {
+            console.log('error fetching viewcount');
+            var viewCount = 0;
+        }
+        let validscore = viewCount > 1000 ? 130 : 140;
+        if ( totalscore >= validscore) {
+            sendResponse();
+            return;
+        }
     } catch (error) {
         console.error('Error processing message with AI:', error);
     }
