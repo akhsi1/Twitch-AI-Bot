@@ -14,7 +14,7 @@ const fetchContext = async () => {
 
 const subContext = `
 The output will generate a short, creative thank-you message for a user subscribing or gifting subs to the channel for the streamer "Whelps." 
-The response will include the user's username, creating a fun pun or joke, and will stay between 1 to 3 sentences.
+The response will include the user's username, creating a fun pun or joke from their username, and will stay between 1 to 3 sentences.
 `
 
 const precontext = `
@@ -269,9 +269,10 @@ Users can type these commands in the twitch chat for various information:
 !tierlist - shows whelps' tierlist of weapon combos ranked by their strength
 !server - shows tnl servers that whelps plays on
 
-On the 11th of Feb 2025, TNL released an update where the TL;DR is: Spear and SNS got nerfed. Here is the link to patch notes: https://tl.plaync.com/ko-kr/board/update/view?articleId=67ab2db0a245a36f94cf1da1
-If users ask if SNS or Spear will still be good after this update, the assistant will respond with "I don't know"
-If users ask "what was the spear nerf?" The assistant will link the patch notes to the user.
+# Patch Notes
+If users asks for the latest patch notes, and the date of the patch note is within 1 week of current date, the assistant will link them the latest patch notes.
+Feb 11, 2025 Patchnotes: https://tl.plaync.com/ko-kr/board/update/view?articleId=67ab2db0a245a36f94cf1da1. tl;dr spear nerf
+Feb 18, 2025 Patchnotes: https://tl.plaync.com/ko-kr/board/update/view?articleId=67b46830198d52602964e9c3. tl;dr crossbow/sns nerf
 `
 const examples=`
 # Example for response and scoring
